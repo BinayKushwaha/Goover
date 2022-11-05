@@ -1,0 +1,72 @@
+<div class="login-main">
+  <div class="login-main-div">
+    <div class="login-logo">
+      <img src="../../assets/gooverlogo.png" alt="" width="166" height="166" />
+    </div>
+    <ul ngbNav #nav="ngbNav" [(activeId)]="active" [destroyOnHide]="false" class="nav-tabs">
+      <li [ngbNavItem]="1" [destroyOnHide]="true">
+        <a ngbNavLink>Phone number</a>
+        <ng-template ngbNavContent>
+          <p>Phone number</p>
+          <input class="form-control login-country-input" name="country" list="country" placeholder="Select country" />
+          <datalist id="country">
+            <option *ngFor="let country of countryCodes" [value]="country.code">
+              {{ country.name }}
+            </option>
+          </datalist>
+          <div class="verification-div">
+            <input type="number" class="phone-input" placeholder="Enter your phone number" />
+            <button class="verification-button">Request verification</button>
+          </div>
+          <div class="code-div">
+            <p>Code</p>
+            <input type="number" class="code-input" placeholder="Enter your verification number" />
+          </div>
+          <div class="login-remember">
+            <input type="checkbox" class="remember-checkbox" />
+            <p class="remember-text">Keep me logged in</p>
+          </div>
+        </ng-template>
+      </li>
+      <div class="tab-border"></div>
+      <li [ngbNavItem]="2">
+        <a ngbNavLink>Email</a>
+        <ng-template ngbNavContent>
+          <p class="email-text">Email address</p>
+          <div class="verification-div">
+            <input type="email" class="phone-input" placeholder="Enter your email" />
+            <button class="verification-button">Request verification</button>
+          </div>
+          <div class="code-div">
+            <p>Code</p>
+            <input type="number" class="code-input" placeholder="Enter your verification number" />
+          </div>
+          <div class="login-remember">
+            <input type="checkbox" class="remember-checkbox" />
+            <p class="remember-text">Keep me logged in</p>
+          </div>
+        </ng-template>
+      </li>
+    </ul>
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    <button class="login-button">Login</button>
+    <div class="border-line"></div>
+    <div class="not-joined">
+      <img src="../../assets/not-joined.png" alt="" width="34" height="38" />
+      <p class="not-joined-text">Not joined yet?</p>
+      <button class="sign-up-free">Sign up for free</button>
+    </div>
+    <div class="footer-items">
+      <p class="tou">Terms of use</p>
+      <div class="vl"></div>
+      <p class="privacy-policy">Privacy Policy</p>
+      <div class="vl"></div>
+      <p class="gbi">Groover Business Information</p>
+      <br />
+      <div class="copyright">
+        <img src="../../assets/copyright.png" alt="" width="15" height="15" />
+        <p class="not-joined-text">Goover.ai</p>
+      </div>
+    </div>
+  </div>
+</div>

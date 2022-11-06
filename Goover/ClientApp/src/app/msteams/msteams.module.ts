@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MSTeamsRoutingModule } from './msteamsrouting.module';
 import { HomeComponent } from './personal-tabs/home/home.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -11,6 +12,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     HomeComponent
   ],
   imports: [
+    FormsModule,
     CommonModule,
     MSTeamsRoutingModule,
     NgbModule,

@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\app\msteams\personal-tabs\" />
     <Folder Include="ClientApp\src\app\services\" />
     <Folder Include="Controllers\" />
   </ItemGroup>

@@ -8,7 +8,7 @@ import { HomeService } from '../../../services/home.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
   countryCodes: CountryCode[] = [];
@@ -18,7 +18,15 @@ export class HomeComponent implements OnInit {
   deviceId: string = '';
   secretKey: string = ""
   accessToken: string = "";
+
+  isEmailTabSelected: boolean = false;
   selectedCountryCode: string = "";
+  PhoneNumber: string = "";
+  SmsCode: string = "";
+  email: string = "";
+  emailRememberMeChecked: boolean = false;
+  smsRememberMeChecked: boolean = false;
+  emailCode: string = "";
 
   constructor(
     private homeService: HomeService
@@ -27,6 +35,22 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.getCountryCode();
     this.deviceId = this.getDeviceID();
+  }
+
+  onLogin()
+  {
+    if (this.isEmailTabSelected) {
+
+    }
+  }
+
+  getEmailRememberMeCheckedInValue(value: boolean)
+  {
+    this.emailRememberMeChecked = value;
+  }
+
+  getSmsRememberMeCheckedInValue(value: boolean) {
+    this.emailRememberMeChecked = value;
   }
 
   getCountryCode() {
@@ -44,20 +68,16 @@ export class HomeComponent implements OnInit {
     this.isVerificationCodeEnabled = false;
   }
 
-  onSelectCountryCode(event: any) {
-    this.selectedCountryCode = event.code;
-  }
-
-  requestVerificationByPhone(phoneNumber: string) {
-    this.homeService.postRequestVerificationByPhone(this.selectedCountryCode, phoneNumber).subscribe(result => {
+  requestVerificationByPhone() {
+    this.homeService.postRequestVerificationByPhone(this.selectedCountryCode, this.PhoneNumber).subscribe(result => {
       if (result) {
         this.isVerificationCodeEnabled = true;
       }
     })
   }
 
-  requestVerificationByEmail(email: string) {
-    this.homeService.postRequestVerificationByEmail(email).subscribe(result => {
+  requestVerificationByEmail() {
+    this.homeService.postRequestVerificationByEmail(this.email).subscribe(result => {
       if (result) {
         this.isVerificationCodeEnabled = true;
       }

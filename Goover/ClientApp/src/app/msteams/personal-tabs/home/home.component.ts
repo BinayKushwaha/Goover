@@ -13,7 +13,7 @@ import { HomeService } from '../../../services/home.service';
 export class HomeComponent implements OnInit {
   countryCodes: CountryCode[] = [];
   isVerificationCodeEnabled = false;
-  isLoginButtonEnabled = false;
+  isLoginEnabled = false;
   active = 1;
   deviceId: string = '';
   secretKey: string = ""
@@ -37,42 +37,13 @@ export class HomeComponent implements OnInit {
     this.deviceId = this.getDeviceID();
   }
 
-  onLogin()
-  {
-    if (this.isEmailTabSelected) {
-
-    }
-  }
-
-  getEmailRememberMeCheckedInValue(value: boolean)
-  {
-    this.emailRememberMeChecked = value;
-  }
-
-  getSmsRememberMeCheckedInValue(value: boolean) {
-    this.emailRememberMeChecked = value;
-  }
-
-  getCountryCode() {
-    this.homeService.getCountryCodes().subscribe({
-      next: data => {
-        this.countryCodes = data;
-      },
-      error: error => {
-        console.log("There was an error!", error);
-      }
-    });
-  };
-
-  changeLoginOption() {
-    this.isVerificationCodeEnabled = false;
-  }
-
   requestVerificationByPhone() {
     this.homeService.postRequestVerificationByPhone(this.selectedCountryCode, this.PhoneNumber).subscribe(result => {
       if (result) {
         this.isVerificationCodeEnabled = true;
       }
+    }, error => {
+      console.error("Error occured while calling API: postRequestVerificationByPhone", error);
     })
   }
 
@@ -81,23 +52,37 @@ export class HomeComponent implements OnInit {
       if (result) {
         this.isVerificationCodeEnabled = true;
       }
-    });
+    },
+      error => {
+        console.error("Error occured while calling API: postRequestVerificationByEmail", error);
+      });
   }
-
+  
   verifySmsCode(countryCode: string, phoneNumber: string, login: string, code: string) {
     this.homeService.verifySmsCode(countryCode, phoneNumber, login, code).subscribe(result => {
       if (result) {
-        this.isLoginButtonEnabled = true;
+        this.isLoginEnabled = true;
       }
-    });
+    },
+      error => {
+        console.error("Error occured while calling API: postRequestVerificationByEmail", error);
+      });
   }
 
   verifyEmailCode(email: string, login: string, code: string) {
     this.homeService.verifyEmailCode(email, login, code).subscribe(result => {
       if (result) {
-        this.isLoginButtonEnabled = true;
+        this.isLoginEnabled = true;
       }
+    }, error => {
+      console.error("Error occured while calling API: postRequestVerificationByEmail", error);
     });
+  }
+
+  onLogin() {
+    if (this.isEmailTabSelected) {
+
+    }
   }
 
   login(username: string, password: string, rememberMe: boolean) {
@@ -126,9 +111,33 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  ///HELPER
+
   /// Generates new GUID as deviceID
   private getDeviceID() {
     return crypto.randomUUID();
   }
 
+  changeLoginOption() {
+    this.isVerificationCodeEnabled = false;
+  }
+
+  getCountryCode() {
+    this.homeService.getCountryCodes().subscribe({
+      next: data => {
+        this.countryCodes = data;
+      },
+      error: error => {
+        console.log("There was an error!", error);
+      }
+    });
+  };
+
+  getEmailRememberMeCheckedInValue(value: boolean) {
+    this.emailRememberMeChecked = value;
+  }
+
+  getSmsRememberMeCheckedInValue(value: boolean) {
+    this.emailRememberMeChecked = value;
+  }
 }

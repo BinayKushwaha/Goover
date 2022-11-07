@@ -12,25 +12,42 @@
 
           <p>Phone number</p>
 
-          <input class="form-control login-country-input" name="country" list="country" [(ngModel)]="selectedCountryCode" placeholder="Select country code" />
+          <input class="form-control login-country-input"
+                 name="country" list="country"
+                 [(ngModel)]="selectedCountryCode"
+                 placeholder="Select country code" />
+
           <datalist id="country">
-            <option *ngFor="let country of countryCodes" [value]="country.code" >
+            <option *ngFor="let country of countryCodes" [value]="country.code">
               {{ country.name }}
             </option>
           </datalist>
 
           <div class="verification-div">
-            <input type="text" class="phone-input" placeholder="Enter your phone number" [(ngModel)]="PhoneNumber" />
+            <input type="text"
+                   class="phone-input"
+                   placeholder="Enter your phone number"
+                   [(ngModel)]="PhoneNumber" />
+
             <button class="verification-button" (click)="requestVerificationByPhone()">Request verification</button>
           </div>
 
           <div class="code-div">
             <p>Code</p>
-            <input type="text" class="code-input" placeholder="Enter your verification number" [(ngModel)]="SmsCode" [disabled]="!isVerificationCodeEnabled" />
+            <input type="text" class="code-input"
+                   placeholder="Enter your verification number"
+                   [(ngModel)]="SmsCode"
+                   [disabled]="!isVerificationCodeEnabled" />
           </div>
 
           <div class="login-remember">
-            <input type="checkbox" name="smsRememberMeChecked" class="remember-checkbox" [(ngModel)]="smsRememberMeChecked" (change)="getSmsRememberMeCheckedInValue(smsRememberMeChecked)" />
+            <input type="checkbox"
+                   name="smsRememberMeChecked"
+                   class="remember-checkbox"
+                   [(ngModel)]="smsRememberMeChecked"
+                   (change)="getSmsRememberMeCheckedInValue(smsRememberMeChecked)"
+                   [disabled]="!isLoginEnabled" />
+
             <p class="remember-text">Keep me logged in</p>
           </div>
 
@@ -47,17 +64,30 @@
           <p class="email-text">Email address</p>
 
           <div class="verification-div">
-            <input type="email" class="phone-input" placeholder="Enter your email" [(ngModel)]="email" />
+            <input type="email"
+                   class="phone-input"
+                   placeholder="Enter your email"
+                   [(ngModel)]="email" />
+
             <button class="verification-button" (click)="requestVerificationByEmail()">Request verification</button>
           </div>
 
           <div class="code-div">
             <p>Code</p>
-            <input type="text" class="code-input" placeholder="Enter your verification number" [(ngModel)]="emailCode" />
+            <input type="text"
+                   class="code-input"
+                   placeholder="Enter your verification
+                   number" [(ngModel)]="emailCode"
+                   [disabled]="!isVerificationCodeEnabled" />
           </div>
 
           <div class="login-remember">
-            <input type="checkbox" name="emailRememberMeChecked" class="remember-checkbox" [(ngModel)]="emailRememberMeChecked" (change)="getEmailRememberMeCheckedInValue(emailRememberMeChecked)" />
+            <input type="checkbox" name="emailRememberMeChecked"
+                   class="remember-checkbox"
+                   [(ngModel)]="emailRememberMeChecked"
+                   (change)="getEmailRememberMeCheckedInValue(emailRememberMeChecked)"
+                   [disabled]="!isLoginEnabled" />
+
             <p class="remember-text">Keep me logged in</p>
           </div>
 
@@ -66,7 +96,7 @@
       </li>
     </ul>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
-    <button class="login-button" (click)="onLogin()">Login</button>
+    <button class="login-button" (click)="onLogin()" [disabled]="!isLoginEnabled">Login</button>
     <div class="border-line"></div>
 
     <div class="not-joined">

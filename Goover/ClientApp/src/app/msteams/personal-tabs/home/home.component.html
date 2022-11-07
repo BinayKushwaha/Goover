@@ -96,7 +96,7 @@
       </li>
     </ul>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
-    <button class="login-button" (click)="onLogin()" [disabled]="!isLoginEnabled">Login</button>
+    <button class="login-button" (click)="loginSubmit()" [disabled]="!isLoginEnabled">Login</button>
     <div class="border-line"></div>
 
     <div class="not-joined">

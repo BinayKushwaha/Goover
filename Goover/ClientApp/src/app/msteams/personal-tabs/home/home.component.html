@@ -4,7 +4,7 @@
       <img src="../../assets/gooverlogo.png" alt="" width="120" height="120" />
     </div>
 
-    <ul ngbNav #nav="ngbNav" [(activeId)]="active" [destroyOnHide]="false" class="nav-tabs">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="active" [destroyOnHide]="false" class="nav-tabs" (click)="changeLoginOption()">
       <li [ngbNavItem]="1" [destroyOnHide]="true">
         <a ngbNavLink>Phone number</a>
 
@@ -37,7 +37,7 @@
             <input type="text" class="code-input"
                    placeholder="Enter your verification number"
                    [(ngModel)]="SmsCode"
-                   [disabled]="!isVerificationCodeEnabled" />
+                   [disabled]="!isLoginEnabled" />
           </div>
 
           <div class="login-remember">
@@ -76,9 +76,9 @@
             <p>Code</p>
             <input type="text"
                    class="code-input"
-                   placeholder="Enter your verification
-                   number" [(ngModel)]="emailCode"
-                   [disabled]="!isVerificationCodeEnabled" />
+                   placeholder="Enter your verification number"
+                   [(ngModel)]="emailCode"
+                   [disabled]="!isLoginEnabled" />
           </div>
 
           <div class="login-remember">

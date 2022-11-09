@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { error, log } from 'console';
+import { SubmitType } from '../../../Enum/submitType.enum';
 import { CountryCode } from '../../../models/countryCode.model';
 import { PhoneNumber } from '../../../models/phoneNumber.model';
 import { AuthenticationToken } from '../../../models/token.model';
@@ -17,6 +18,11 @@ export class HomeComponent implements OnInit {
   deviceId: string = '';
   secretKey: string = ""
   accessToken: string = "";
+
+  emailValidationError: string = "";
+  phoneValidationError: string = "";
+  codeValidationError: string = "";
+  loginValidationError: string = "";
 
   isEmailTabSelected: boolean = false;
   selectedCountryCode: string = "";
@@ -37,64 +43,73 @@ export class HomeComponent implements OnInit {
   }
 
   requestVerificationByPhone() {
-    this.homeService.postRequestVerificationByPhone(this.selectedCountryCode, this.PhoneNumber).subscribe(result => {
-      if (result) {
-        this.isLoginEnabled = true;
-      }
-    }, error => {
-      console.error("Error occured while calling API: postRequestVerificationByPhone", error);
-    })
+    this.validate(SubmitType.RequestVerificationByPhone.valueOf());
+    if (this.emailValidationError.length == 0) {
+      this.homeService.postRequestVerificationByPhone(this.selectedCountryCode, this.PhoneNumber).subscribe(result => {
+        if (result) {
+          this.isLoginEnabled = true;
+        }
+      }, error => {
+        console.error("Error occured while calling API: postRequestVerificationByPhone", error);
+      })
+    }
   }
 
   requestVerificationByEmail() {
-    console.log(this.email);
-    this.homeService.postRequestVerificationByEmail(this.email).subscribe(result => {
-      console.log(result);
-      if (result) {
-        this.isLoginEnabled = true;
-      }
-    },
-      error => {
-        console.error("Error occured while calling API: postRequestVerificationByEmail", error);
-      });
+    this.validate(SubmitType.RequestVerificationByEmail.valueOf());
+    if (this.emailValidationError.length == 0) {
+      this.homeService.postRequestVerificationByEmail(this.email).subscribe(result => {
+        if (result) {
+          this.isLoginEnabled = true;
+        }
+      },
+        error => {
+          console.error("Error occured while calling API: postRequestVerificationByEmail", error);
+        });
+    }
   }
 
   loginSubmit() {
     if (this.activeTab == 1) {
+      this.validate(SubmitType.LoginByPhone.valueOf());
+      if (this.loginValidationError.length == 0 && this.phoneValidationError.length == 0 && this.codeValidationError.length==0) {
+        //verify sms code
+        this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).subscribe(result => {
+          if (result) {
+            //enable login input fields
+            this.isLoginEnabled = true;
 
-      //verify sms code
-      this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).subscribe(result => {
-        if (result) {
-          //enable login input fields
-          this.isLoginEnabled = true;
+            console.log("sms code successful");
 
-          console.log("sms code successful");
-
-          //authenticate via phone number
-          this.login(this.PhoneNumber, this.SmsCode, this.smsRememberMeChecked);
-        }
-      },
-        error => {
-          console.error("Error occured while calling API: verifySmsCode", error);
-        });
+            //authenticate via phone number
+            this.login(this.PhoneNumber, this.SmsCode, this.smsRememberMeChecked);
+          }
+        },
+          error => {
+            console.error("Error occured while calling API: verifySmsCode", error);
+          });
+      }
     }
     else if (this.activeTab == 2) {
+      this.validate(SubmitType.LoginByEmail.valueOf());
 
       // verify email code
-      this.homeService.verifyEmailCode(this.email, this.email, this.emailCode).subscribe(result => {
-        if (result) {
+      if (this.loginValidationError.length == 0 && this.emailValidationError.length == 0 && this.codeValidationError.length==0) {
+        this.homeService.verifyEmailCode(this.email, this.email, this.emailCode).subscribe(result => {
+          if (result) {
 
-          console.log("email code successful");
+            console.log("email code successful");
 
-          //enable login input fields
-          this.isLoginEnabled = true;
+            //enable login input fields
+            this.isLoginEnabled = true;
 
-          //authenticate via email
-          this.login(this.email, this.emailCode, this.emailRememberMeChecked)
-        }
-      }, error => {
-        console.error("Error occured while calling API: verifyEmailCode", error);
-      });
+            //authenticate via email
+            this.login(this.email, this.emailCode, this.emailRememberMeChecked)
+          }
+        }, error => {
+          console.error("Error occured while calling API: verifyEmailCode", error);
+        });
+      }
     }
   }
 
@@ -133,8 +148,66 @@ export class HomeComponent implements OnInit {
     return crypto.randomUUID();
   }
 
+  validate(type: string) {
+    this.emailValidationError = "";
+    this.phoneValidationError = "";
+    this.loginValidationError = "";
+
+    if (type == SubmitType.RequestVerificationByPhone.valueOf()) {
+      if (this.selectedCountryCode.length != 0 && this.PhoneNumber.length != 0) {
+        var numberRegExP = new RegExp("^\d$");
+        if (!numberRegExP.test(this.PhoneNumber)) {
+          this.phoneValidationError = "The phonenumber is not valid.";
+
+        }
+      } else {
+        this.phoneValidationError = "Both country code and phonenumber are required.";
+      }
+    } else if (type == SubmitType.RequestVerificationByEmail.valueOf()) {
+      if (this.email.length != 0) {
+        var emailRegExp = new RegExp("/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/");
+        if (!emailRegExp.test(this.email)) {
+          this.emailValidationError = "The email format is invalid.";
+        }
+      } else {
+        this.emailValidationError = "The emai is required.";
+      }
+    } else if (type == SubmitType.LoginByPhone.valueOf()) {
+      if (this.selectedCountryCode.length != 0 && this.PhoneNumber.length != 0 && this.SmsCode.length != 0) {
+        var numberRegExP = new RegExp("^\d$");
+        if (!numberRegExP.test(this.PhoneNumber)) {
+          this.phoneValidationError = "The phonenumber is not valid.";
+        }
+        if (!numberRegExP.test(this.SmsCode)) {
+          this.codeValidationError = "The code is not valid.";
+        }
+      } else {
+        this.loginValidationError = "Country code, phonenumber and code are required.";
+      }
+    } else if (type == SubmitType.LoginByEmail.valueOf()) {
+      if (this.email.length != 0 && this.emailCode.length != 0) {
+        var emailRegExp = new RegExp("/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/");
+        var numberRegExP = new RegExp("^\d$");
+        if (!emailRegExp.test(this.email)) {
+          this.emailValidationError = "The email format is invalid.";
+        }
+        if (!numberRegExP.test(this.SmsCode)) {
+          this.emailValidationError = "The code is not valid.";
+        }
+      } else {
+        this.loginValidationError = "The emai and code is required.";
+      }
+    } else {
+      console.log("Invalid type. Method: Validate().")
+    }
+  }
+
   changeLoginOption() {
     this.isLoginEnabled = false;
+    this.codeValidationError = "";
+    this.emailValidationError = "";
+    this.phoneValidationError = "";
+
     if (this.activeTab == 1) {
       this.selectedCountryCode = "";
       this.PhoneNumber = "";

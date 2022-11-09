@@ -3,98 +3,98 @@
     <div class="login-logo">
       <img src="../../assets/gooverlogo.png" alt="" width="120" height="120" />
     </div>
+    
+      <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" [destroyOnHide]="false" class="nav-tabs" (click)="changeLoginOption()">
+        <li [ngbNavItem]="1" [destroyOnHide]="true">
+          <a ngbNavLink>Phone number</a>
 
-    <ul ngbNav #nav="ngbNav" [(activeId)]="active" [destroyOnHide]="false" class="nav-tabs" (click)="changeLoginOption()">
-      <li [ngbNavItem]="1" [destroyOnHide]="true">
-        <a ngbNavLink>Phone number</a>
+          <ng-template ngbNavContent>
 
-        <ng-template ngbNavContent>
+            <p>Phone number</p>
 
-          <p>Phone number</p>
+            <input class="form-control login-country-input"
+                   name="country" list="country"
+                   [(ngModel)]="selectedCountryCode"
+                   placeholder="Select country code" />
 
-          <input class="form-control login-country-input"
-                 name="country" list="country"
-                 [(ngModel)]="selectedCountryCode"
-                 placeholder="Select country code" />
+            <datalist id="country">
+              <option *ngFor="let country of countryCodes" [value]="country.code">
+                {{ country.name }}
+              </option>
+            </datalist>
 
-          <datalist id="country">
-            <option *ngFor="let country of countryCodes" [value]="country.code">
-              {{ country.name }}
-            </option>
-          </datalist>
+            <div class="verification-div">
+              <input type="tel"
+                     class="phone-input"
+                     placeholder="Enter your phone number"
+                     [(ngModel)]="PhoneNumber" />
 
-          <div class="verification-div">
-            <input type="text"
-                   class="phone-input"
-                   placeholder="Enter your phone number"
-                   [(ngModel)]="PhoneNumber" />
+              <button class="verification-button" (click)="requestVerificationByPhone()">Request verification</button>
+            </div>
 
-            <button class="verification-button" (click)="requestVerificationByPhone()">Request verification</button>
-          </div>
+            <div class="code-div">
+              <p>Code</p>
+              <input type="text" class="code-input"
+                     placeholder="Enter your verification number"
+                     [(ngModel)]="SmsCode"
+                     [disabled]="!isLoginEnabled" />
+            </div>
 
-          <div class="code-div">
-            <p>Code</p>
-            <input type="text" class="code-input"
-                   placeholder="Enter your verification number"
-                   [(ngModel)]="SmsCode"
-                   [disabled]="!isLoginEnabled" />
-          </div>
+            <div class="login-remember">
+              <input type="checkbox"
+                     name="smsRememberMeChecked"
+                     class="remember-checkbox"
+                     [(ngModel)]="smsRememberMeChecked"
+                     (change)="getSmsRememberMeCheckedInValue(smsRememberMeChecked)"
+                     [disabled]="!isLoginEnabled" />
 
-          <div class="login-remember">
-            <input type="checkbox"
-                   name="smsRememberMeChecked"
-                   class="remember-checkbox"
-                   [(ngModel)]="smsRememberMeChecked"
-                   (change)="getSmsRememberMeCheckedInValue(smsRememberMeChecked)"
-                   [disabled]="!isLoginEnabled" />
+              <p class="remember-text">Keep me logged in</p>
+            </div>
 
-            <p class="remember-text">Keep me logged in</p>
-          </div>
+          </ng-template>
+        </li>
 
-        </ng-template>
-      </li>
+        <div class="tab-border"></div>
 
-      <div class="tab-border"></div>
+        <li [ngbNavItem]="2">
+          <a ngbNavLink>Email</a>
 
-      <li [ngbNavItem]="2">
-        <a ngbNavLink>Email</a>
+          <ng-template ngbNavContent>
 
-        <ng-template ngbNavContent>
+            <p class="email-text">Email address</p>
 
-          <p class="email-text">Email address</p>
+            <div class="verification-div">
+              <input type="email"
+                     class="phone-input"
+                     placeholder="Enter your email"
+                     [(ngModel)]="email" />
 
-          <div class="verification-div">
-            <input type="email"
-                   class="phone-input"
-                   placeholder="Enter your email"
-                   [(ngModel)]="email" />
+              <button class="verification-button" (click)="requestVerificationByEmail()">Request verification</button>
+            </div>
 
-            <button class="verification-button" (click)="requestVerificationByEmail()">Request verification</button>
-          </div>
+            <div class="code-div">
+              <p>Code</p>
+              <input type="text"
+                     class="code-input"
+                     placeholder="Enter your verification number"
+                     [(ngModel)]="emailCode"
+                     [disabled]="!isLoginEnabled" />
+            </div>
 
-          <div class="code-div">
-            <p>Code</p>
-            <input type="text"
-                   class="code-input"
-                   placeholder="Enter your verification number"
-                   [(ngModel)]="emailCode"
-                   [disabled]="!isLoginEnabled" />
-          </div>
+            <div class="login-remember">
+              <input type="checkbox" name="emailRememberMeChecked"
+                     class="remember-checkbox"
+                     [(ngModel)]="emailRememberMeChecked"
+                     (change)="getEmailRememberMeCheckedInValue(emailRememberMeChecked)"
+                     [disabled]="!isLoginEnabled" />
 
-          <div class="login-remember">
-            <input type="checkbox" name="emailRememberMeChecked"
-                   class="remember-checkbox"
-                   [(ngModel)]="emailRememberMeChecked"
-                   (change)="getEmailRememberMeCheckedInValue(emailRememberMeChecked)"
-                   [disabled]="!isLoginEnabled" />
+              <p class="remember-text">Keep me logged in</p>
+            </div>
 
-            <p class="remember-text">Keep me logged in</p>
-          </div>
+          </ng-template>
 
-        </ng-template>
-
-      </li>
-    </ul>
+        </li>
+      </ul>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
     <button class="login-button" (click)="loginSubmit()" [disabled]="!isLoginEnabled">Login</button>
     <div class="border-line"></div>

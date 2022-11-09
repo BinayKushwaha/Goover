@@ -13,7 +13,7 @@ import { HomeService } from '../../../services/home.service';
 export class HomeComponent implements OnInit {
   countryCodes: CountryCode[] = [];
   isLoginEnabled = false;
-  active = 1;
+  activeTab = 1;
   deviceId: string = '';
   secretKey: string = ""
   accessToken: string = "";
@@ -47,7 +47,9 @@ export class HomeComponent implements OnInit {
   }
 
   requestVerificationByEmail() {
+    console.log(this.email);
     this.homeService.postRequestVerificationByEmail(this.email).subscribe(result => {
+      console.log(result);
       if (result) {
         this.isLoginEnabled = true;
       }
@@ -58,7 +60,7 @@ export class HomeComponent implements OnInit {
   }
 
   loginSubmit() {
-    if (this.active == 1) {
+    if (this.activeTab == 1) {
 
       //verify sms code
       this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).subscribe(result => {
@@ -76,7 +78,7 @@ export class HomeComponent implements OnInit {
           console.error("Error occured while calling API: verifySmsCode", error);
         });
     }
-    else if (this.active == 2) {
+    else if (this.activeTab == 2) {
 
       // verify email code
       this.homeService.verifyEmailCode(this.email, this.email, this.emailCode).subscribe(result => {
@@ -133,13 +135,13 @@ export class HomeComponent implements OnInit {
 
   changeLoginOption() {
     this.isLoginEnabled = false;
-    if (this.active == 1) {
+    if (this.activeTab == 1) {
       this.selectedCountryCode = "";
       this.PhoneNumber = "";
       this.SmsCode = "";
       this.smsRememberMeChecked = false;
     }
-    if (this.active == 2) {
+    if (this.activeTab == 2) {
       this.email = "";
       this.SmsCode = "";
       this.emailRememberMeChecked = false;

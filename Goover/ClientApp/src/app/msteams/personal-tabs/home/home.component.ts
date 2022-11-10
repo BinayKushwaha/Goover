@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { error, log } from 'console';
+import { Console, error, log } from 'console';
 import { SubmitType } from '../../../Enum/submitType.enum';
 import { CountryCode } from '../../../models/countryCode.model';
 import { PhoneNumber } from '../../../models/phoneNumber.model';
 import { AuthenticationToken } from '../../../models/token.model';
 import { HomeService } from '../../../services/home.service';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -53,8 +54,8 @@ export class HomeComponent implements OnInit {
           this.isSmsCoodeSent = true;
           this.isLoginEnabled = true;
         }
-      }, error => {
-        console.error("Error occured while calling API: postRequestVerificationByPhone", error);
+      }, (error) => {
+        console.log("Error occured while calling API: postRequestVerificationByPhone", error);
       })
     }
   }
@@ -68,8 +69,8 @@ export class HomeComponent implements OnInit {
           this.isLoginEnabled = true;
         }
       },
-        error => {
-          console.error("Error occured while calling API: postRequestVerificationByEmail", error);
+        (error) => {
+          console.log("Error occured while calling API: postRequestVerificationByEmail", error);
         });
     }
   }
@@ -77,26 +78,22 @@ export class HomeComponent implements OnInit {
   loginSubmit() {
     if (this.activeTab == 1) {
       this.validate(SubmitType.LoginByPhone.valueOf());
-      if (this.loginValidationError.length == 0 && this.phoneValidationError.length == 0 && this.codeValidationError.length==0) {
-
-        console.log("deviceID.", this.deviceId);
-
-        //verify sms code
-        this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).subscribe(result => {
-          if (result) {
-            console.log("i am here.");
-
-            //enable login input fields
-            this.isLoginEnabled = true;
-
-            console.log("sms code successful");
-
-            //authenticate via phone number
-            this.login(this.PhoneNumber, this.SmsCode, this.smsRememberMeChecked);
-          }
-        },
-          error => {
-            console.error("Error occured while calling API: verifySmsCode", error);
+      if (this.loginValidationError.length == 0 && this.phoneValidationError.length == 0 && this.codeValidationError.length == 0) {
+        //console.log("deviceID.", this.deviceId);
+        this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).
+          pipe(switchMap((isCodeVerified) => {
+            if (isCodeVerified) {
+              return this.homeService.authenticate(this.PhoneNumber, this.SmsCode, this.smsRememberMeChecked, this.deviceId).
+                pipe(switchMap((data) => {
+                  return this.homeService.getAuthenticationToken(data.secret_key).pipe(map(token => {
+                    this.accessToken = token.id_token
+                  }))
+                }))
+            } else {
+              return [];
+            }
+          })).subscribe(result => {
+            console.log(result)
           });
       }
     }
@@ -104,51 +101,24 @@ export class HomeComponent implements OnInit {
       this.validate(SubmitType.LoginByEmail.valueOf());
 
       // verify email code
-      if (this.loginValidationError.length == 0 && this.emailValidationError.length == 0 && this.codeValidationError.length==0) {
-        this.homeService.verifyEmailCode(this.email, this.email, this.emailCode).subscribe(result => {
-          if (result) {
-
-            console.log("email code successful");
-
-            //enable login input fields
-            this.isLoginEnabled = true;
-
-            //authenticate via email
-            this.login(this.email, this.emailCode, this.emailRememberMeChecked)
-          }
-        }, error => {
-          console.error("Error occured while calling API: verifyEmailCode", error);
-        });
+      if (this.loginValidationError.length == 0 && this.emailValidationError.length == 0 && this.codeValidationError.length == 0) {
+        this.homeService.verifyEmailCode(this.email, this.email, this.emailCode).
+          pipe(switchMap((isCodeVerified) => {
+            if (isCodeVerified) {
+              return this.homeService.authenticate(this.email, this.emailCode, this.emailRememberMeChecked, this.deviceId).
+                pipe(switchMap((data) => {
+                  return this.homeService.getAuthenticationToken(data.secret_key).pipe(map(token => {
+                    this.accessToken = token.id_token
+                  }))
+                }))
+            } else {
+              return [];
+            }
+          })).subscribe(ret => {
+            console.log(ret)
+          });
       }
     }
-  }
-
-  login(username: string, password: string, rememberMe: boolean) {
-
-    console.log("authentication started.")
-
-    this.homeService.authenticate(username, password, rememberMe, this.deviceId).subscribe(res => {
-      if (res != null && res.secret_key != null) {
-        this.secretKey = res.secret_key;
-
-        console.log("authentication completed.")
-        console.log("Successfully got secret key");
-
-        this.homeService.getAuthenticationToken(res.secret_key).subscribe(res => {
-          if (res != null && res.secret_key != null) {
-            this.accessToken = res.id_token;
-
-            console.log("Login successful");
-            console.log("access token", this.accessToken);
-          }
-        }, error => {
-          console.error("Error occured while calling API: GetToken", error);
-        })
-
-      }
-    }, error => {
-      console.error("Error occured while calling API: Authenticate", error);
-    });
   }
 
   ///HELPER
@@ -168,7 +138,7 @@ export class HomeComponent implements OnInit {
 
     if (type == SubmitType.RequestVerificationByPhone.valueOf()) {
       if (this.selectedCountryCode.length != 0 && this.PhoneNumber.length != 0) {
-       
+
         if (!numberRegExP.test(this.PhoneNumber)) {
           this.phoneValidationError = "The phonenumber is not valid.";
 

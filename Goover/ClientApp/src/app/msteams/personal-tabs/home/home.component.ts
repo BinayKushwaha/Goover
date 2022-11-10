@@ -14,8 +14,12 @@ import { HomeService } from '../../../services/home.service';
 export class HomeComponent implements OnInit {
   countryCodes: CountryCode[] = [];
   isLoginEnabled = false;
+  isEmailTabSelected: boolean = false;
+  isSmsCoodeSent: boolean = false;
+  isEmailCodeSent: boolean = false;
+
   activeTab = 1;
-  deviceId: string = '';
+  deviceId: string = "";
   secretKey: string = ""
   accessToken: string = "";
 
@@ -24,7 +28,6 @@ export class HomeComponent implements OnInit {
   codeValidationError: string = "";
   loginValidationError: string = "";
 
-  isEmailTabSelected: boolean = false;
   selectedCountryCode: string = "";
   PhoneNumber: string = "";
   SmsCode: string = "";
@@ -44,9 +47,10 @@ export class HomeComponent implements OnInit {
 
   requestVerificationByPhone() {
     this.validate(SubmitType.RequestVerificationByPhone.valueOf());
-    if (this.emailValidationError.length == 0) {
+    if (this.phoneValidationError.length == 0) {
       this.homeService.postRequestVerificationByPhone(this.selectedCountryCode, this.PhoneNumber).subscribe(result => {
         if (result) {
+          this.isSmsCoodeSent = true;
           this.isLoginEnabled = true;
         }
       }, error => {
@@ -60,6 +64,7 @@ export class HomeComponent implements OnInit {
     if (this.emailValidationError.length == 0) {
       this.homeService.postRequestVerificationByEmail(this.email).subscribe(result => {
         if (result) {
+          this.isEmailCodeSent = true;
           this.isLoginEnabled = true;
         }
       },
@@ -73,9 +78,14 @@ export class HomeComponent implements OnInit {
     if (this.activeTab == 1) {
       this.validate(SubmitType.LoginByPhone.valueOf());
       if (this.loginValidationError.length == 0 && this.phoneValidationError.length == 0 && this.codeValidationError.length==0) {
+
+        console.log("deviceID.", this.deviceId);
+
         //verify sms code
         this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).subscribe(result => {
           if (result) {
+            console.log("i am here.");
+
             //enable login input fields
             this.isLoginEnabled = true;
 
@@ -153,9 +163,12 @@ export class HomeComponent implements OnInit {
     this.phoneValidationError = "";
     this.loginValidationError = "";
 
+    var numberRegExP = new RegExp(/^[0-9]*$/);
+    var emailRegExp = new RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+
     if (type == SubmitType.RequestVerificationByPhone.valueOf()) {
       if (this.selectedCountryCode.length != 0 && this.PhoneNumber.length != 0) {
-        var numberRegExP = new RegExp("^\d$");
+       
         if (!numberRegExP.test(this.PhoneNumber)) {
           this.phoneValidationError = "The phonenumber is not valid.";
 
@@ -165,7 +178,6 @@ export class HomeComponent implements OnInit {
       }
     } else if (type == SubmitType.RequestVerificationByEmail.valueOf()) {
       if (this.email.length != 0) {
-        var emailRegExp = new RegExp("/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/");
         if (!emailRegExp.test(this.email)) {
           this.emailValidationError = "The email format is invalid.";
         }
@@ -174,7 +186,6 @@ export class HomeComponent implements OnInit {
       }
     } else if (type == SubmitType.LoginByPhone.valueOf()) {
       if (this.selectedCountryCode.length != 0 && this.PhoneNumber.length != 0 && this.SmsCode.length != 0) {
-        var numberRegExP = new RegExp("^\d$");
         if (!numberRegExP.test(this.PhoneNumber)) {
           this.phoneValidationError = "The phonenumber is not valid.";
         }
@@ -186,8 +197,6 @@ export class HomeComponent implements OnInit {
       }
     } else if (type == SubmitType.LoginByEmail.valueOf()) {
       if (this.email.length != 0 && this.emailCode.length != 0) {
-        var emailRegExp = new RegExp("/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/");
-        var numberRegExP = new RegExp("^\d$");
         if (!emailRegExp.test(this.email)) {
           this.emailValidationError = "The email format is invalid.";
         }

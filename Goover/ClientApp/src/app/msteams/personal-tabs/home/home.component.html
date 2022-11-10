@@ -29,6 +29,10 @@
             {{phoneValidationError}}
           </p>
 
+          <p *ngIf="isSmsCoodeSent" style="color:green">
+            Code is sent successfully.
+          </p>
+
           <div class="code-div">
             <p>Code</p>
             <input type="text" class="code-input"
@@ -75,6 +79,10 @@
 
           <p *ngIf="emailValidationError" style="color:red">
             {{emailValidationError}}
+          </p>
+
+          <p *ngIf="isEmailCodeSent" style="color:green">
+            Code is sent successfully.
           </p>
 
           <div class="code-div">

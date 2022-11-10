@@ -227,7 +227,7 @@ export class HomeComponent implements OnInit {
         this.countryCodes = data;
       },
       error: error => {
-        console.log("There was an error!", error);
+        console.log("Error occured while calling API: getCountryCode", error);
       }
     });
   };

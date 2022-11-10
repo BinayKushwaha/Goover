@@ -12,16 +12,9 @@
 
           <p>Phone number</p>
 
-          <input class="form-control login-country-input"
-                 name="country" list="country"
-                 [(ngModel)]="selectedCountryCode"
-                 placeholder="Select country code" />
-
-          <datalist id="country">
-            <option *ngFor="let country of countryCodes" [value]="country.code">
-              {{ country.name }}
-            </option>
-          </datalist>
+          <ng-select [(ngModel)]="selectedCountryCode" placeholder="No country code selected">
+            <ng-option *ngFor="let country of countryCodes" [value]="country.code">{{country.name}}</ng-option>
+          </ng-select>
 
           <div class="verification-div">
             <input type="tel"

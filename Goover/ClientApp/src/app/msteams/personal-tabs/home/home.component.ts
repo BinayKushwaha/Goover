@@ -78,7 +78,9 @@ export class HomeComponent implements OnInit {
   loginSubmit() {
     if (this.activeTab == 1) {
       this.validate(SubmitType.LoginByPhone.valueOf());
+
       if (this.loginValidationError.length == 0 && this.phoneValidationError.length == 0 && this.codeValidationError.length == 0) {
+
         //console.log("deviceID.", this.deviceId);
         this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).
           pipe(switchMap((isCodeVerified) => {
@@ -86,7 +88,8 @@ export class HomeComponent implements OnInit {
               return this.homeService.authenticate(this.PhoneNumber, this.SmsCode, this.smsRememberMeChecked, this.deviceId).
                 pipe(switchMap((data) => {
                   return this.homeService.getAuthenticationToken(data.secret_key).pipe(map(token => {
-                    this.accessToken = token.id_token
+                    this.accessToken = token.id_token;
+                    console.log("Got token successfully.");
                   }))
                 }))
             } else {
@@ -97,6 +100,7 @@ export class HomeComponent implements OnInit {
           });
       }
     }
+
     else if (this.activeTab == 2) {
       this.validate(SubmitType.LoginByEmail.valueOf());
 

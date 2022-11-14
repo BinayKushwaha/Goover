@@ -58,9 +58,9 @@ export class HomeService {
 
   verifyEmailCode(email: string, login: string, code: string) {
     let request: VerifyEmailCode = {
-      email: email,
       login: login,
-      code: code
+      email: email,
+      emailCode: code
     };
     return this.http.post<any>(this.deepSignalBaseUrl + `/api/email/verify`, request);
   }
@@ -76,7 +76,7 @@ export class HomeService {
   }
 
   getAuthenticationToken(secretKey: string) {
-    return this.http.get<AuthenticationToken>(this.deepSignalBaseUrl + `/api/public/getToken?${secretKey}`);
+    return this.http.get<AuthenticationToken>(this.deepSignalBaseUrl + `/api/public/getToken?secretKey=${secretKey}`);
   }
 
 

@@ -77,47 +77,55 @@ export class HomeComponent implements OnInit {
 
   loginSubmit() {
     if (this.activeTab == 1) {
-      this.validate(SubmitType.LoginByPhone.valueOf());
-      if (this.loginValidationError.length == 0 && this.phoneValidationError.length == 0 && this.codeValidationError.length == 0) {
-        //console.log("deviceID.", this.deviceId);
-        this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).
-          pipe(switchMap((isCodeVerified) => {
-            if (isCodeVerified) {
-              return this.homeService.authenticate(this.PhoneNumber, this.SmsCode, this.smsRememberMeChecked, this.deviceId).
-                pipe(switchMap((data) => {
-                  return this.homeService.getAuthenticationToken(data.secret_key).pipe(map(token => {
-                    this.accessToken = token.id_token
-                  }))
-                }))
-            } else {
-              return [];
-            }
-          })).subscribe(result => {
-            console.log(result)
-          });
-      }
+      this.submitByPhone();
     }
     else if (this.activeTab == 2) {
-      this.validate(SubmitType.LoginByEmail.valueOf());
+      this.submitByEmail();
+    }
+  }
 
-      // verify email code
-      if (this.loginValidationError.length == 0 && this.emailValidationError.length == 0 && this.codeValidationError.length == 0) {
-        this.homeService.verifyEmailCode(this.email, this.email, this.emailCode).
-          pipe(switchMap((isCodeVerified) => {
-            if (isCodeVerified) {
-              return this.homeService.authenticate(this.email, this.emailCode, this.emailRememberMeChecked, this.deviceId).
-                pipe(switchMap((data) => {
-                  return this.homeService.getAuthenticationToken(data.secret_key).pipe(map(token => {
-                    this.accessToken = token.id_token
-                  }))
+
+  submitByPhone() {
+    this.validate(SubmitType.LoginByPhone.valueOf());
+    if (this.loginValidationError.length == 0 && this.phoneValidationError.length == 0 && this.codeValidationError.length == 0) {
+      //console.log("deviceID.", this.deviceId);
+      this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).
+        pipe(switchMap((isCodeVerified) => {
+          if (isCodeVerified) {
+            return this.homeService.authenticate(this.PhoneNumber, this.SmsCode, this.smsRememberMeChecked, this.deviceId).
+              pipe(switchMap((data) => {
+                return this.homeService.getAuthenticationToken(data.secret_key).pipe(map(token => {
+                  localStorage.setItem("token", JSON.stringify(token));
                 }))
-            } else {
-              return [];
-            }
-          })).subscribe(ret => {
-            console.log(ret)
-          });
-      }
+              }))
+          } else {
+            return [];
+          }
+        })).subscribe(result => {
+          console.log(result)
+        });
+    }
+  }
+
+  submitByEmail() {
+    this.validate(SubmitType.LoginByEmail.valueOf());
+    // verify email code
+    if (this.loginValidationError.length == 0 && this.emailValidationError.length == 0 && this.codeValidationError.length == 0) {
+      this.homeService.verifyEmailCode(this.email, this.email, this.emailCode).
+        pipe(switchMap((isCodeVerified) => {
+          if (isCodeVerified) {
+            return this.homeService.authenticate(this.email, this.emailCode, this.emailRememberMeChecked, this.deviceId).
+              pipe(switchMap((data) => {
+                return this.homeService.getAuthenticationToken(data.secret_key).pipe(map(token => {
+                  localStorage.setItem("token", JSON.stringify(token));
+                }))
+              }))
+          } else {
+            return [];
+          }
+        })).subscribe(ret => {
+          console.log(ret)
+        });
     }
   }
 

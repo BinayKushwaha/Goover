@@ -1,4 +1,4 @@
-<div class="login-main">
+<div *ngIf="!isUserAuthenticated" class="login-main">
   <div class="login-main-div">
     <div class="login-logo">
       <img src="../../assets/gooverlogo.png" alt="" width="120" height="120" />
@@ -142,4 +142,8 @@
     </div>
 
   </div>
+</div>
+
+<div *ngIf="isUserAuthenticated">
+  <p>This user is authenticated</p>
 </div>

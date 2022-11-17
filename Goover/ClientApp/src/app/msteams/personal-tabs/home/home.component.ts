@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Console, error, log } from 'console';
 import { SubmitType } from '../../../Enum/submitType.enum';
 import { CountryCode } from '../../../models/countryCode.model';
-import { PhoneNumber } from '../../../models/phoneNumber.model';
-import { AuthenticationToken } from '../../../models/token.model';
 import { HomeService } from '../../../services/home.service';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -18,11 +16,10 @@ export class HomeComponent implements OnInit {
   isEmailTabSelected: boolean = false;
   isSmsCoodeSent: boolean = false;
   isEmailCodeSent: boolean = false;
+  isUserAuthenticated: boolean = false;
 
   activeTab = 1;
   deviceId: string = "";
-  secretKey: string = ""
-  accessToken: string = "";
 
   emailValidationError: string = "";
   phoneValidationError: string = "";
@@ -42,9 +39,26 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.checkForAuthenticatedToken();
     this.getCountryCode();
     this.deviceId = this.getDeviceID();
   }
+
+  checkForAuthenticatedToken() {
+    let token = localStorage.getItem("authenticated_token");
+    if (token != null) {
+      let authenticated_token = JSON.parse(token);
+      if (authenticated_token.id_token && authenticated_token.secret_key) {
+        this.isUserAuthenticated = true;
+      }
+      else {
+        this.isUserAuthenticated = false;
+      }
+    }
+    
+  }
+
+
 
   requestVerificationByPhone() {
     this.validate(SubmitType.RequestVerificationByPhone.valueOf());
@@ -88,15 +102,22 @@ export class HomeComponent implements OnInit {
   submitByPhone() {
     this.validate(SubmitType.LoginByPhone.valueOf());
     if (this.loginValidationError.length == 0 && this.phoneValidationError.length == 0 && this.codeValidationError.length == 0) {
-      //console.log("deviceID.", this.deviceId);
       this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).
         pipe(switchMap((verifyResult) => {
           if (verifyResult.success) {
-            return this.homeService.authenticate(this.PhoneNumber, this.SmsCode, this.smsRememberMeChecked, this.deviceId).
-              pipe(switchMap((authenticatedData) => {
-                return this.homeService.getAuthenticationToken(authenticatedData.secret_key).pipe(map(token => {
-                  localStorage.setItem("token", JSON.stringify(token));
-                }))
+            return this.homeService.authenticate(this.email, this.emailCode, this.emailRememberMeChecked, this.deviceId).
+              pipe(map((authenticatedToken) => {
+                if (authenticatedToken !== null && authenticatedToken.id_token != null) {
+                  this.isUserAuthenticated = true;
+                  localStorage.setItem("authenticated_token", JSON.stringify(authenticatedToken));
+                } else {
+                  console.log("User is not authenticated");
+                }
+                
+                //return this.homeService.getAuthenticationToken(authenticatedData.secret_key).pipe(map(token => {
+                //  this.isUserAuthenticated = true;
+                //  localStorage.setItem("token", JSON.stringify(token));
+                //}))
               }))
           } else {
             return [];
@@ -115,10 +136,18 @@ export class HomeComponent implements OnInit {
         pipe(switchMap((verifyResult) => {
           if (verifyResult.success) {
             return this.homeService.authenticate(this.email, this.emailCode, this.emailRememberMeChecked, this.deviceId).
-              pipe(switchMap((authenticatedData) => {
-                return this.homeService.getAuthenticationToken(authenticatedData.secret_key).pipe(map(token => {
-                  localStorage.setItem("token", JSON.stringify(token));
-                }))
+              pipe(map((authenticatedToken) => {
+                if (authenticatedToken !== null && authenticatedToken.id_token != null) {
+                  this.isUserAuthenticated = true;
+                  localStorage.setItem("authenticated_token", JSON.stringify(authenticatedToken));
+                } else {
+                  console.log("User is not authenticated");
+                }
+                
+                //return this.homeService.getAuthenticationToken(authenticatedData.secret_key).pipe(map(token => {
+                //  this.isUserAuthenticated = true;
+                //  localStorage.setItem("token", JSON.stringify(token));
+                //}))
               }))
           } else {
             return [];

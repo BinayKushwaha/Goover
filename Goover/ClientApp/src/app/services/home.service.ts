@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 import { Auth } from '../models/auth.model';
 import { Email } from '../models/email.model';
 import { PhoneNumber } from '../models/phoneNumber.model';
-import { AuthenticationToken } from '../models/token.model';
+import { AuthenticationToken } from '../models/authenticationToken.model';
 import { VerifyEmailCode } from '../models/verifyEmailCode.model';
 import { VerifySmsCode } from '../models/verifySmsCode.model';
 

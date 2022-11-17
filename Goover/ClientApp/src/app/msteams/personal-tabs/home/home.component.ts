@@ -90,11 +90,11 @@ export class HomeComponent implements OnInit {
     if (this.loginValidationError.length == 0 && this.phoneValidationError.length == 0 && this.codeValidationError.length == 0) {
       //console.log("deviceID.", this.deviceId);
       this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).
-        pipe(switchMap((isCodeVerified) => {
-          if (isCodeVerified) {
+        pipe(switchMap((verifyResult) => {
+          if (verifyResult.success) {
             return this.homeService.authenticate(this.PhoneNumber, this.SmsCode, this.smsRememberMeChecked, this.deviceId).
-              pipe(switchMap((data) => {
-                return this.homeService.getAuthenticationToken(data.secret_key).pipe(map(token => {
+              pipe(switchMap((authenticatedData) => {
+                return this.homeService.getAuthenticationToken(authenticatedData.secret_key).pipe(map(token => {
                   localStorage.setItem("token", JSON.stringify(token));
                 }))
               }))
@@ -112,11 +112,11 @@ export class HomeComponent implements OnInit {
     // verify email code
     if (this.loginValidationError.length == 0 && this.emailValidationError.length == 0 && this.codeValidationError.length == 0) {
       this.homeService.verifyEmailCode(this.email, this.email, this.emailCode).
-        pipe(switchMap((isCodeVerified) => {
-          if (isCodeVerified) {
+        pipe(switchMap((verifyResult) => {
+          if (verifyResult.success) {
             return this.homeService.authenticate(this.email, this.emailCode, this.emailRememberMeChecked, this.deviceId).
-              pipe(switchMap((data) => {
-                return this.homeService.getAuthenticationToken(data.secret_key).pipe(map(token => {
+              pipe(switchMap((authenticatedData) => {
+                return this.homeService.getAuthenticationToken(authenticatedData.secret_key).pipe(map(token => {
                   localStorage.setItem("token", JSON.stringify(token));
                 }))
               }))

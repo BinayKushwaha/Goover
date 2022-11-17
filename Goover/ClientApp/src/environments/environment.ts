@@ -4,8 +4,7 @@
 
 export const environment = {
   production: false,
-  teamsAppBaseUrl: "https://localhost:5001",
-  deepSignalAiBaseUrl: "https://deepsignal.ai"
+  deepSignalAiBaseUrl: "https://goover.ai"
 };
 
 /*

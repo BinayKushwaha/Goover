@@ -16,13 +16,11 @@ import { VerifySmsCode } from '../models/verifySmsCode.model';
 
 export class HomeService {
 
-  baseUrl: string;
   deepSignalBaseUrl: string;
 
   constructor(
     private http: HttpClient,
   ) {
-    this.baseUrl = environment.teamsAppBaseUrl;
     this.deepSignalBaseUrl = environment.deepSignalAiBaseUrl;
   }
 

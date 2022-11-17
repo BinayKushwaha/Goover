@@ -44,18 +44,6 @@
           <p *ngIf="codeValidationError" style="color:red">
             {{codeValidationError}}
           </p>
-
-          <div class="login-remember">
-            <input type="checkbox"
-                   name="smsRememberMeChecked"
-                   class="remember-checkbox"
-                   [(ngModel)]="smsRememberMeChecked"
-                   (change)="getSmsRememberMeCheckedInValue(smsRememberMeChecked)"
-                   [disabled]="!isLoginEnabled" />
-
-            <p class="remember-text">Keep me logged in</p>
-          </div>
-
         </ng-template>
       </li>
 
@@ -97,16 +85,6 @@
           <p *ngIf="codeValidationError" style="color:red">
             {{codeValidationError}}
           </p>
-          <div class="login-remember">
-            <input type="checkbox" name="emailRememberMeChecked"
-                   class="remember-checkbox"
-                   [(ngModel)]="emailRememberMeChecked"
-                   (change)="getEmailRememberMeCheckedInValue(emailRememberMeChecked)"
-                   [disabled]="!isLoginEnabled" />
-
-            <p class="remember-text">Keep me logged in</p>
-          </div>
-
         </ng-template>
 
       </li>

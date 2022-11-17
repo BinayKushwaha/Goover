@@ -30,8 +30,6 @@ export class HomeComponent implements OnInit {
   PhoneNumber: string = "";
   SmsCode: string = "";
   email: string = "";
-  emailRememberMeChecked: boolean = false;
-  smsRememberMeChecked: boolean = false;
   emailCode: string = "";
 
   constructor(
@@ -105,7 +103,7 @@ export class HomeComponent implements OnInit {
       this.homeService.verifySmsCode(this.selectedCountryCode, this.PhoneNumber, this.PhoneNumber, this.SmsCode).
         pipe(switchMap((verifyResult) => {
           if (verifyResult.success) {
-            return this.homeService.authenticate(this.email, this.emailCode, this.emailRememberMeChecked, this.deviceId).
+            return this.homeService.authenticate(this.email, this.emailCode, true, this.deviceId).
               pipe(map((authenticatedToken) => {
                 if (authenticatedToken !== null && authenticatedToken.id_token != null) {
                   this.isUserAuthenticated = true;
@@ -135,7 +133,7 @@ export class HomeComponent implements OnInit {
       this.homeService.verifyEmailCode(this.email, this.email, this.emailCode).
         pipe(switchMap((verifyResult) => {
           if (verifyResult.success) {
-            return this.homeService.authenticate(this.email, this.emailCode, this.emailRememberMeChecked, this.deviceId).
+            return this.homeService.authenticate(this.email, this.emailCode, true, this.deviceId).
               pipe(map((authenticatedToken) => {
                 if (authenticatedToken !== null && authenticatedToken.id_token != null) {
                   this.isUserAuthenticated = true;
@@ -228,12 +226,10 @@ export class HomeComponent implements OnInit {
       this.selectedCountryCode = "";
       this.PhoneNumber = "";
       this.SmsCode = "";
-      this.smsRememberMeChecked = false;
     }
     if (this.activeTab == 2) {
       this.email = "";
       this.SmsCode = "";
-      this.emailRememberMeChecked = false;
     }
   }
 
@@ -247,12 +243,4 @@ export class HomeComponent implements OnInit {
       }
     });
   };
-
-  getEmailRememberMeCheckedInValue(value: boolean) {
-    this.emailRememberMeChecked = value;
-  }
-
-  getSmsRememberMeCheckedInValue(value: boolean) {
-    this.emailRememberMeChecked = value;
-  }
 }
